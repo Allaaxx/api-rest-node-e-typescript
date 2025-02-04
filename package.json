@@ -6,10 +6,10 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "postinstall": "tsc",
-    "production": "node ./build/index.js",
-    "start": "ts-node-dev ./src/index.ts",
-    "test": "jest"
+   "postinstall": "tsc",
+  "dev": "ts-node-dev ./src/index.ts",
+  "production": "node ./build/index.js",
+  "test": "jest"
   },
   "dependencies": {
     "@types/http-status-codes": "^1.2.0",
