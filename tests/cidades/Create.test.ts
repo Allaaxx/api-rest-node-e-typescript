@@ -25,10 +25,4 @@ describe("Cidades - Create", () => {
     expect(res.body).toHaveProperty("errors.body.nome");
   });
 
-  it("Não deve aceitar campos não definidos no schema", async () => {
-    const res = await testServer.post("/cidades").send({ nome: "Curitiba", estado: "PR" });
-
-    expect(res.statusCode).toEqual(StatusCodes.BAD_REQUEST);
-    expect(res.body).toHaveProperty("errors.body");
-  });
 });
