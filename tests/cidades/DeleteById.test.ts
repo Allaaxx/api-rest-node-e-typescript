@@ -1,25 +1,31 @@
-import { StatusCodes } from "http-status-codes";
-import { testServer } from "../jest.setup";
+import { StatusCodes } from 'http-status-codes';
 
-describe("Cidades - DeleteById", () => {
-  it("Deve retornar erro 500 pois não está implementado", async () => {
-    const res = await testServer.delete("/cidades/1");
+import { testServer } from '../jest.setup';
 
-    expect(res.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
-    expect(res.text).toBe("Não Implementado!");
+
+describe('Cidades - DeleteById', () => {
+
+  it('Apaga registro', async () => {
+
+    const res1 = await testServer
+      .post('/cidades')
+      .send({ nome: 'Caxias do sul' });
+
+    expect(res1.statusCode).toEqual(StatusCodes.CREATED);
+
+    const resApagada = await testServer
+      .delete(`/cidades/${res1.body}`)
+      .send();
+
+    expect(resApagada.statusCode).toEqual(StatusCodes.NO_CONTENT);
   });
+  it('Tenta apagar registro que não existe', async () => {
 
-  it("Não deve aceitar ID inválido (menor ou igual a 0)", async () => {
-    const res = await testServer.delete("/cidades/0");
+    const res1 = await testServer
+      .delete('/cidades/99999')
+      .send();
 
-    expect(res.statusCode).toEqual(StatusCodes.BAD_REQUEST);
-    expect(res.body).toHaveProperty("errors.params.id");
-  });
-
-  it("Não deve aceitar ID inválido (não numérico)", async () => {
-    const res = await testServer.delete("/cidades/abc");
-
-    expect(res.statusCode).toEqual(StatusCodes.BAD_REQUEST);
-    expect(res.body).toHaveProperty("errors.params.id");
+    expect(res1.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
+    expect(res1.body).toHaveProperty('errors.default');
   });
 });

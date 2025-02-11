@@ -1,19 +1,18 @@
-import { ETableNames } from "../../ETableNames";
+import { ETableNames } from '../../ETableNames';
+import { Knex } from '../../knex';
 
-import {Knex} from "../../knex";
 
-export const deleteById = async (id: number): Promise<number | Error> => {
+export const deleteById = async (id: number): Promise<void | Error> => {
   try {
     const result = await Knex(ETableNames.CIDADES)
-    .where('id','=', id)
-    .del();
-   
-  if(result > 0) return result;
-  
+      .where('id', '=', id)
+      .del();
 
-  return new Error('error ao deletar registro');
-  }catch(error){
+    if (result > 0) return;
+
+    return new Error('Erro ao apagar o registro');
+  } catch (error) {
     console.log(error);
-    return new Error('error ao deletar registro');
+    return new Error('Erro ao apagar o registro');
   }
-}
+};

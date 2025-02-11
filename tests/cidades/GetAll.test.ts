@@ -1,33 +1,24 @@
-import { StatusCodes } from "http-status-codes";
-import { testServer } from "../jest.setup";
+import { StatusCodes } from 'http-status-codes';
 
-describe("Cidades - GetAll", () => {
-  it("Deve retornar erro 500 pois não está implementado", async () => {
-    const res = await testServer.get("/cidades");
+import { testServer } from '../jest.setup';
 
-    expect(res.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
-    expect(res.text).toBe("Não Implementado!");
-  });
 
-  it("Deve aceitar uma consulta válida", async () => {
-    const res = await testServer.get("/cidades?page=1&limit=10&filter=teste");
+describe('Cidades - GetAll', () => {
 
-    expect(res.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
-    expect(res.text).toBe("Não Implementado!");
-  });
+  it('Buscar todos os registros', async () => {
 
-  it("Não deve aceitar valores inválidos para page e limit", async () => {
-    const res = await testServer.get("/cidades?page=-1&limit=0");
+    const res1 = await testServer
+      .post('/cidades')
+      .send({ nome: 'Caxias do sul' });
 
-    expect(res.statusCode).toEqual(StatusCodes.BAD_REQUEST);
-    expect(res.body).toHaveProperty("errors.query.page");
-    expect(res.body).toHaveProperty("errors.query.limit");
-  });
+    expect(res1.statusCode).toEqual(StatusCodes.CREATED);
 
-  it("Deve aceitar requisição sem parâmetros", async () => {
-    const res = await testServer.get("/cidades");
+    const resBuscada = await testServer
+      .get('/cidades')
+      .send();
 
-    expect(res.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
-    expect(res.text).toBe("Não Implementado!");
+    expect(Number(resBuscada.header['x-total-count'])).toBeGreaterThan(0);
+    expect(resBuscada.statusCode).toEqual(StatusCodes.OK);
+    expect(resBuscada.body.length).toBeGreaterThan(0);
   });
 });

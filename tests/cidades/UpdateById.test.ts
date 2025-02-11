@@ -1,25 +1,31 @@
-import { StatusCodes } from "http-status-codes";
-import { testServer } from "../jest.setup";
+import { StatusCodes } from 'http-status-codes';
 
-describe("Cidades - GetById", () => {
-  it("Deve retornar erro 500 pois não está implementado", async () => {
-    const res = await testServer.get("/cidades/1");
+import { testServer } from '../jest.setup';
 
-    expect(res.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
-    expect(res.text).toBe("Não Implementado!");
+
+describe('Cidades - UpdateById', () => {
+
+  it('Atualiza registro', async () => {
+
+    const res1 = await testServer
+      .post('/cidades')
+      .send({ nome: 'Caxias do sul' });
+
+    expect(res1.statusCode).toEqual(StatusCodes.CREATED);
+
+    const resAtualizada = await testServer
+      .put(`/cidades/${res1.body}`)
+      .send({ nome: 'Caxias' });
+
+    expect(resAtualizada.statusCode).toEqual(StatusCodes.NO_CONTENT);
   });
+  it('Tenta atualizar registro que não existe', async () => {
 
-  it("Não deve aceitar ID inválido (menor ou igual a 0)", async () => {
-    const res = await testServer.get("/cidades/0");
+    const res1 = await testServer
+      .put('/cidades/99999')
+      .send({ nome: 'Caxias' });
 
-    expect(res.statusCode).toEqual(StatusCodes.BAD_REQUEST);
-    expect(res.body).toHaveProperty("errors.params.id");
-  });
-
-  it("Não deve aceitar ID inválido (não numérico)", async () => {
-    const res = await testServer.get("/cidades/abc");
-
-    expect(res.statusCode).toEqual(StatusCodes.BAD_REQUEST);
-    expect(res.body).toHaveProperty("errors.params.id");
+    expect(res1.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
+    expect(res1.body).toHaveProperty('errors.default');
   });
 });
