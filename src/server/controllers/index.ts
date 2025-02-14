@@ -1,1 +1,2 @@
-export * from './cidades/index';
+export * from './cidades';
+export * from './pessoas';
