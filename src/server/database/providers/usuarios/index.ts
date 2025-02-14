@@ -1,10 +1,10 @@
-import * as getById from './GetByEmail';
+import * as getByEmail from './GetByEmail';
 import * as create from './Create';
 
 
 
 export const UsuariosProvider = {
-  ...getById,
+  ...getByEmail,
   ...create,
  
 };
