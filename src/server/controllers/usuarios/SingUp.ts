@@ -17,20 +17,23 @@ export const singUpValidation = validation((getSchema) => ({
 
 }));
 
-export const singUp = async (req: Request<{}, {}, IBodyProps>, res: Response): Promise<Response> => {
+export const singUp = async (req: Request<{}, {}, IBodyProps>, res: Response): Promise<void> => {
   const result = await UsuariosProvider.create(req.body);
 
   if (result instanceof Error) {
     if (result.message.includes('UNIQUE constraint failed: usuarios.email')) {
-      return res.status(StatusCodes.CONFLICT).json({
+      res.status(StatusCodes.CONFLICT).json({
         errors: { default: 'Email já cadastrado.' },
       });
+      return;
     }
     
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       errors: { default: result.message },
     });
+    return;
   }
 
-  return res.status(StatusCodes.CREATED).json(result);
+  res.status(StatusCodes.CREATED).json(result);
+  return;
 };
