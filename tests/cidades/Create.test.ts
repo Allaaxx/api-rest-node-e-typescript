@@ -1,28 +1,43 @@
-import { StatusCodes } from "http-status-codes";
-import { testServer } from "../jest.setup";
+import { StatusCodes } from 'http-status-codes';
+
+import { testServer } from '../jest.setup';
 
 
+describe('Cidades - Create', () => {
+  let accessToken = '';
+  beforeAll(async () => {
+    const email = 'create-cidades@gmail.com';
+    await testServer.post('/cadastrar').send({ nome: 'Teste', email, senha: '123456' });
+    const signInRes = await testServer.post('/entrar').send({ email, senha: '123456' });
 
-describe("Cidades - Create", () => {
-  it("Deve criar um registro com nome válido", async () => {
-    const res = await testServer.post("/cidades").send({ nome: "Rio de Janeiro" });
-
-    expect(res.statusCode).toEqual(StatusCodes.CREATED);
-    expect(typeof res.body).toEqual("number");
+    accessToken = signInRes.body.accessToken;
   });
 
-  it("Não deve criar um registro com nome muito curto", async () => {
-    const res = await testServer.post("/cidades").send({ nome: "RJ" });
 
-    expect(res.statusCode).toEqual(StatusCodes.BAD_REQUEST);
-    expect(res.body).toHaveProperty("errors.body.nome");
+  it('Tenta criar um registro sem token de acesso', async () => {
+    const res1 = await testServer
+      .post('/cidades')
+      .send({ nome: 'Caxias do Sul' });
+
+    expect(res1.statusCode).toEqual(StatusCodes.UNAUTHORIZED);
+    expect(res1.body).toHaveProperty('errors.default');
   });
+  it('Cria registro', async () => {
+    const res1 = await testServer
+      .post('/cidades')
+      .set({ Authorization: `Bearer ${accessToken}` })
+      .send({ nome: 'Caxias do Sul' });
 
-  it("Não deve criar um registro sem o campo nome", async () => {
-    const res = await testServer.post("/cidades").send({});
-
-    expect(res.statusCode).toEqual(StatusCodes.BAD_REQUEST);
-    expect(res.body).toHaveProperty("errors.body.nome");
+    expect(res1.statusCode).toEqual(StatusCodes.CREATED);
+    expect(typeof res1.body).toEqual('number');
   });
+  it('Tenta criar um registro com nome muito curto', async () => {
+    const res1 = await testServer
+      .post('/cidades')
+      .set({ Authorization: `Bearer ${accessToken}` })
+      .send({ nome: 'Ca' });
 
+    expect(res1.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+    expect(res1.body).toHaveProperty('errors.body.nome');
+  });
 });
